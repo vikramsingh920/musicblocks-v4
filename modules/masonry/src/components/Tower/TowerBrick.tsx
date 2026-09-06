@@ -1,9 +1,10 @@
-import { memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useRef, type MouseEvent } from 'react';
 
 import type { TowerNode } from '@/@types/tower.types';
 
 import { BrickView } from '@/components/Brick/Brick';
 import { useBrickMove } from '@/hooks/useBrickMove';
+import { useActionMenuStore } from '@/stores/actionMenu';
 import { useBrickLayoutStore } from '@/stores/brick';
 import { findNodeAndTower, useWorkspaceStore } from '@/stores/workspace';
 
@@ -48,6 +49,18 @@ export const TowerBrickView = memo(function (props: TowerBrickViewProps) {
     useWorkspaceStore.getState().setNestingFold(id, !found.node.model.isNestingFolded);
   }, [id]);
 
+  // Opened from the brick rather than a document listener, so the menu keys off the brick the
+  // press actually landed on. `preventDefault` swallows the browser's own menu, and interact.js
+  // drags on the primary button alone, so this press cannot also tear the brick out of its tower.
+  const openActionMenu = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+
+      useActionMenuStore.getState().open(id);
+    },
+    [id],
+  );
+
   if (!isMounted) return null;
 
   const brick = (() => {
@@ -71,6 +84,7 @@ export const TowerBrickView = memo(function (props: TowerBrickViewProps) {
     <div
       ref={ref}
       data-id={id}
+      onContextMenu={openActionMenu}
       className="absolute"
       style={{
         transform: `translate(${x}px, ${y}px)`,
