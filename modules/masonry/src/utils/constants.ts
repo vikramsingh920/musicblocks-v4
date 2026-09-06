@@ -47,3 +47,10 @@ export const MAX_SCALE_LEVEL = SCALE_LEVELS[SCALE_LEVELS.length - 1];
  * toggle folds the cavity instead of dragging the brick out of its tower.
  */
 export const FOLD_TOGGLE_SELECTOR = '[data-fold-toggle]';
+
+/**
+ * Marks the action menu's own DOM, so a press inside it is not an outside press: the menu stamps
+ * the attribute on its root, and `useActionMenuDismiss` tests against it before closing. Nothing
+ * carries it until the menu lands, which is the point, until then every press is outside.
+ */
+export const ACTION_MENU_SELECTOR = '[data-action-menu]';
